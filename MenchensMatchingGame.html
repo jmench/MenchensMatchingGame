@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- Author: Jordan Menchen (with help from Professor Linton's Starter Code) -->
 <html lang="en">
+
 <head>
     <title>Menchen's Matching Game</title>
     <style>
@@ -8,23 +9,29 @@
             max-width: 960px;
             margin: auto;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 3px solid black;
             border-collapse: collapse;
             overflow: hidden;
             white-space: nowrap;
             font-family: "Lucida Console", "Monaco", "monospace";
         }
-        #scoreBoard{
+
+        #scoreBoard {
             font-size: 20px;
             border: 6px solid black;
             border-collapse: separate;
         }
-        #theBoard{
+
+        #theBoard {
             font-size: 30px;
             height: 450px;
             text-align: center;
         }
+
         #controlBoard {
             width: 960px;
             height: 50px;
@@ -94,7 +101,8 @@
                         numCards = Math.pow(size, 2);
                         ask = false;
                         break;
-                    default: alert("Please enter a valid size!");
+                    default:
+                        alert("Please enter a valid size!");
                 }
             }
         }
@@ -152,12 +160,11 @@
             if (loser) {
                 if (playerTurn === 1) {
                     p2_win();
-                }
-                else {
+                } else {
                     p1_win();
                 }
                 // Stop all elements on the screen from being clickable
-                window.addEventListener("click", function (event) {
+                window.addEventListener("click", function(event) {
                     event.stopPropagation();
                 }, true);
             }
@@ -192,8 +199,7 @@
                         p1_score++;
                         document.getElementById("p1_score").innerHTML = "Score: " + p1_score;
                         document.getElementById("message").innerHTML = p1_name + ", you found a match! Pick again!";
-                    }
-                    else {
+                    } else {
                         p2_score++;
                         document.getElementById("p2_score").innerHTML = "Score: " + p2_score;
                         document.getElementById("message").innerHTML = p2_name + ", you found a match! Pick again!";
@@ -204,17 +210,15 @@
                         // Display winning messages
                         if (p1_score > p2_score) {
                             p1_win();
-                        }
-                        else if (p2_score > p1_score) {
+                        } else if (p2_score > p1_score) {
                             p2_win();
-                        }
-                        else {
+                        } else {
                             alert("It's a tie! Better luck next time!\n\nRefresh the page to play again!");
                             document.getElementById("message").innerHTML = "It's a tie... Nobody wins...";
                             document.body.style.backgroundColor = "white";
                         }
                         // Stop all elements on the screen from being clickable
-                        window.addEventListener("click", function (event) {
+                        window.addEventListener("click", function(event) {
                             event.stopPropagation();
                         }, true);
                     }
@@ -232,7 +236,7 @@
 
             if (document.getElementById("controlBoard")) {
                 // Add an event listener to the message cell to allow the user to reset unmatched cards
-                document.getElementById("message").onclick = function () {
+                document.getElementById("message").onclick = function() {
                     // Make sure that two cards have been clicked
                     if (secondCard != null) {
                         // Flips the currently flipped cards back over
@@ -246,8 +250,7 @@
                             playerTurn = 2;
                             document.getElementById("message").innerHTML = p2_name + ", you're up!";
                             document.body.style.backgroundColor = p2_turn;
-                        }
-                        else {
+                        } else {
                             playerTurn = 1;
                             document.getElementById("message").innerHTML = p1_name + ", you're up!";
                             document.body.style.backgroundColor = p1_turn;
@@ -256,7 +259,7 @@
                     }
                 };
                 // Add an event listener to the concede cell to allow the user to concede the game
-                document.getElementById("concede").onclick = function () {
+                document.getElementById("concede").onclick = function() {
                     concede();
                 };
             }
@@ -269,7 +272,7 @@
             getGameInfo();
 
             // Loop through for half as many tiles are in the board to assure they all have a match
-            for (let i = 0; i < (numCards)/2; i++) {
+            for (let i = 0; i < (numCards) / 2; i++) {
                 // Creates random numbers to match the color and nums arrays
                 let randColor = Math.round(Math.random() * 9);
                 let randNum = Math.round(Math.random() * 3);
@@ -291,7 +294,7 @@
             let gameBoard = document.getElementById("theBoard");
             for (let rows = 0; rows < size; rows++) {
                 let newRow = gameBoard.insertRow(rows);
-                for (let cols = 0; cols < size; cols++){
+                for (let cols = 0; cols < size; cols++) {
                     let newCard = newRow.insertCell(cols);
                     newCard.id = counter.toString();
                     newCard.style.backgroundColor = defaultColor;
@@ -302,41 +305,41 @@
                 }
             }
         } // startGame();
-
     </script>
 
 </head>
 
 <body style="background-color: rgba(0,0,255,.5)">
 
-<div class="content">
+    <div class="content">
 
-<table id="scoreBoard" style="background-color: white">
-    <tr>
-        <th colspan="2" align="center" style="color:blue">PLAYER 1</th>
-        <th colspan="2" align="center" style="color:red">PLAYER 2</th>
-    </tr>
-    <tr>
-        <td width="405" id="p1_name" style="color:blue; font-size: 20px">Jack</td>
-        <td width="75" id="p1_score" style="color:blue">Score: 0</td>
-        <td width="405" id="p2_name" style="color:red">Diane</td>
-        <td width="75" id="p2_score" style="color:red">Score: 0</td>
-    </tr>
+        <table id="scoreBoard" style="background-color: white">
+            <tr>
+                <th colspan="2" align="center" style="color:blue">PLAYER 1</th>
+                <th colspan="2" align="center" style="color:red">PLAYER 2</th>
+            </tr>
+            <tr>
+                <td width="405" id="p1_name" style="color:blue; font-size: 20px">Jack</td>
+                <td width="75" id="p1_score" style="color:blue">Score: 0</td>
+                <td width="405" id="p2_name" style="color:red">Diane</td>
+                <td width="75" id="p2_score" style="color:red">Score: 0</td>
+            </tr>
 
-</table>
-<br>
-<table id="theBoard"></table>
-<br>
-<table id="controlBoard" style="background-color: white">
-    <tr>
-        <td id="message" width ="750" style="font-size: 24px"></td>
-        <td id="concede" align="center" style="font-size: 20px">Concede Game</td>
-    </tr>
-</table>
+        </table>
+        <br>
+        <table id="theBoard"></table>
+        <br>
+        <table id="controlBoard" style="background-color: white">
+            <tr>
+                <td id="message" width="750" style="font-size: 24px"></td>
+                <td id="concede" align="center" style="font-size: 20px">Concede Game</td>
+            </tr>
+        </table>
 
-<script>
-    startGame();
-</script>
-</div>
+        <script>
+            startGame();
+        </script>
+    </div>
 </body>
+
 </html>
