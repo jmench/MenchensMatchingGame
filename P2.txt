@@ -1,0 +1,44 @@
+Author:
+    Jordan Menchen
+
+References:
+    https://www.w3schools.com/jsref/prop_style_backgroundcolor.asp
+    https://www.w3schools.com/cssref/css_websafe_fonts.asp
+
+Collaboration:
+    Got help from Kenton Carrier on how to "flip" a card.
+
+URL:
+    https://www.cs.uky.edu/~jkme226/CS316/P2_Menchen/MenchensMatchingGame.html
+
+Description:
+    This project is a memory game created using JavaScript and HTML. It works
+    by asking the players for their information and information about their
+    game. It then appropriately sets up a memory game board based on the user
+    inputs, and allows the users to compete and test their memory skills.
+
+    I created a memory game similar to this using Java in CS335, so I was able
+    to carry over a lot of the logic that I used in that into this project.
+
+Questions:
+    1. Javascript runs in the browser, so it doesn't need the server to process
+        any information unlike the first project that used CGI.
+
+    2. If somebody were to have the name of my file, they could theoretically
+        go to my URL and see my source code.
+
+    3. In regards to data structures, I simply just assigned each <td> element
+        on the gameBoard to have a certain ID. This ID mimics the indexes
+        of an array of "cards" that I created, where each element in the array
+        has a color and number value randomly assigned to it. In this way, I
+        was able to shuffle the array and randomly "place" cards on the board
+        without having to mess with the <td> elements. I could access the color
+        and number value of every <td> element by using it's ID and finding the
+        index in my array that matched it.
+
+    4. My program accepts mouse clicks on any element in the game board even
+        after the first two cards have been selected and the game is waiting
+        for the user to click the message to flip the cards back over. Although
+        these clicks are registered, the cards do not flip over since they do
+        not pass the "if" and "else if" statements. Clicking on already matched
+        cards triggers as well, but no code is performed.

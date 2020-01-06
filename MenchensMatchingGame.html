@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<!-- Author: Jordan Menchen (with help from Professor Linton's Starter Code) -->
+<html lang="en">
+<head>
+    <title>Menchen's Matching Game</title>
+    <style>
+        .content {
+            max-width: 960px;
+            margin: auto;
+        }
+        table, th, td {
+            border: 3px solid black;
+            border-collapse: collapse;
+            overflow: hidden;
+            white-space: nowrap;
+            font-family: "Lucida Console", "Monaco", "monospace";
+        }
+        #scoreBoard{
+            font-size: 20px;
+            border: 6px solid black;
+            border-collapse: separate;
+        }
+        #theBoard{
+            font-size: 30px;
+            height: 450px;
+            text-align: center;
+        }
+        #controlBoard {
+            width: 960px;
+            height: 50px;
+        }
+    </style>
+    <meta charset="utf-8" />
+    <script>
+        // GLOBAL VARIABLES
+        let playerTurn = 1; // This keeps track of whose turn it is
+
+        let p1_score = 0; // Player 1's Score
+        let p1_name = null; // Player 1's Name
+        let p1_turn = "rgba(0,0,255,.5)"; // Sets a nice background color to help with turn recognition
+
+        let p2_score = 0; // Player 2's Score
+        let p2_name = null; // Player 2's Name
+        let p2_turn = "rgba(255,0,0,.5)"; // Sets a nice background color to help with turn recognition
+
+        let cards = []; // Create an array of the card values in the form [color, number]
+
+        let size = 0; // Size of the board
+        let numCards = 0; // Total number of cards on the board
+
+        let flippedCards = 0; // Keeps track of the number of cards that have been matched
+
+        let firstCard = null; // Tracker for the id of the first card
+        let firstCardInfo = null; // Tracker for the color and num of the first card
+        let secondCard = null; // Tracker for the id of the second card
+        let secondCardInfo = null; // Tracker for the color and num of the second card
+
+        let cardFace = "--"; // Default front face of a card
+        let defaultColor = "lightgrey"; // Default color of front face
+
+        // Define the possible colors and numbers for card generation later
+        let colors = ["maroon", "red", "orange", "yellow", "green", "purple", "lime", "blue", "gray", "white"];
+        let nums = [1, 2, 3, 4];
+
+        // This function prompts the user to input the data needed to create the game board
+        function getGameInfo() {
+            let p1 = document.getElementById("p1_name");
+            p1.innerHTML = prompt("Please enter Player 1's name:", "Michael");
+            let p2 = document.getElementById("p2_name");
+            p2.innerHTML = prompt("Please enter Player 2's name:", "Pichael");
+            p1_name = document.getElementById("p1_name").textContent;
+            p2_name = document.getElementById("p2_name").textContent;
+            document.getElementById("message").innerHTML = p1.textContent + ", you're up!";
+
+            // Get the board size from the prompt and ask until the user enters a valid size
+            let ask = true;
+            while (ask) {
+                let sizeVal = prompt("What size would you like the board to be?\n Must be 4, 6, 8, or 10!", "4");
+                size = parseInt(sizeVal);
+                switch (size) {
+                    case 4:
+                        numCards = Math.pow(size, 2);
+                        ask = false;
+                        break;
+                    case 6:
+                        numCards = Math.pow(size, 2);
+                        ask = false;
+                        break;
+                    case 8:
+                        numCards = Math.pow(size, 2);
+                        ask = false;
+                        break;
+                    case 10:
+                        numCards = Math.pow(size, 2);
+                        ask = false;
+                        break;
+                    default: alert("Please enter a valid size!");
+                }
+            }
+        }
+
+        // This simply modifies the screen to show that player 1 won
+        function p1_win() {
+            alert(p1_name + " wins!\n\nRefresh the page to play again!");
+            document.getElementById("message").innerHTML = "Game over! " + p1_name + " wins!";
+            document.body.style.backgroundColor = p1_turn;
+        }
+
+        // This simply modifies the screen to show that player 2 won
+        function p2_win() {
+            alert(p2_name + " wins!\n\nRefresh the page to play again!");
+            document.getElementById("message").innerHTML = "Game over! " + p2_name + " wins!";
+            document.body.style.backgroundColor = p2_turn;
+        }
+
+        // This function simply resets the card variables that keep track of the current turn
+        function resetPicks() {
+            firstCard = null;
+            firstCardInfo = null;
+            secondCard = null;
+            secondCardInfo = null;
+        }
+
+        // This function flips the current card that was clicked to reveal its color and number
+        function showCard(id, i) {
+            document.getElementById(id).style.backgroundColor = cards[i][0];
+            document.getElementById(id).innerHTML = cards[i][1];
+        }
+
+        // This function runs when a player clicks on "concede game"
+        function concede() {
+            let whiteFlag = "";
+            // Personalize message if player 1 is conceding
+            if (playerTurn === 1) {
+                whiteFlag = p1_name + ", are you sure you want to concede?";
+                // Adds to message if they are winning
+                if (p1_score > p2_score) {
+                    whiteFlag += "\nYou're winning right now!"
+                }
+            }
+            // Personalize message if player 2 is conceding
+            else {
+                whiteFlag = p2_name + ", are you sure you want to concede?";
+                if (p2_score > p1_score) {
+                    // Adds to message if they are winning
+                    whiteFlag += "\nYou're winning right now!"
+                }
+            }
+            // Have player confirm whether or not they want to concede
+            let loser = confirm(whiteFlag);
+            // Display alert depending on who conceded
+            if (loser) {
+                if (playerTurn === 1) {
+                    p2_win();
+                }
+                else {
+                    p1_win();
+                }
+                // Stop all elements on the screen from being clickable
+                window.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                }, true);
+            }
+        }
+
+        // This function runs when a card is clicked
+        function flip() {
+            console.log("clicked");
+            let id = this.id;
+            let i = parseInt(id);
+
+            // First checks to see if it is the first card to be flipped and that it isn't flipped
+            if (firstCard == null && document.getElementById(id).style.backgroundColor === defaultColor) {
+                // Set the values of the first card and show it's values
+                firstCard = i;
+                firstCardInfo = cards[i];
+                showCard(id, i);
+                flippedCards++;
+            }
+            // Check if it is the second card to be flipped and that it hasn't been flipped yet
+            else if (firstCard != null && secondCard == null && document.getElementById(id).style.backgroundColor === defaultColor) {
+                // Set the values of the second card and show it's values
+                secondCard = i;
+                secondCardInfo = cards[i];
+                showCard(id, i);
+                flippedCards++;
+
+                // After second card is flipped, check if the two match
+                if (firstCardInfo[0] === secondCardInfo[0] && firstCardInfo[1] === secondCardInfo[1]) {
+                    // Append score based on who got the match
+                    if (playerTurn === 1) {
+                        p1_score++;
+                        document.getElementById("p1_score").innerHTML = "Score: " + p1_score;
+                        document.getElementById("message").innerHTML = p1_name + ", you found a match! Pick again!";
+                    }
+                    else {
+                        p2_score++;
+                        document.getElementById("p2_score").innerHTML = "Score: " + p2_score;
+                        document.getElementById("message").innerHTML = p2_name + ", you found a match! Pick again!";
+                    }
+
+                    // After appending score, check if the game is over (all cards flipped)
+                    if (flippedCards === numCards) {
+                        // Display winning messages
+                        if (p1_score > p2_score) {
+                            p1_win();
+                        }
+                        else if (p2_score > p1_score) {
+                            p2_win();
+                        }
+                        else {
+                            alert("It's a tie! Better luck next time!\n\nRefresh the page to play again!");
+                            document.getElementById("message").innerHTML = "It's a tie... Nobody wins...";
+                            document.body.style.backgroundColor = "white";
+                        }
+                        // Stop all elements on the screen from being clickable
+                        window.addEventListener("click", function (event) {
+                            event.stopPropagation();
+                        }, true);
+                    }
+                    // Else the game is still going, so reset the picks
+                    else {
+                        resetPicks();
+                    }
+                }
+                // Else it was not a match, so display proper message
+                else {
+                    document.getElementById("message").innerHTML = "Not a match. Click here to turn over tiles.";
+                    flippedCards -= 2;
+                }
+            }
+
+            if (document.getElementById("controlBoard")) {
+                // Add an event listener to the message cell to allow the user to reset unmatched cards
+                document.getElementById("message").onclick = function () {
+                    // Make sure that two cards have been clicked
+                    if (secondCard != null) {
+                        // Flips the currently flipped cards back over
+                        document.getElementById(firstCard).style.backgroundColor = defaultColor;
+                        document.getElementById(firstCard).innerHTML = cardFace;
+                        document.getElementById(secondCard).style.backgroundColor = defaultColor;
+                        document.getElementById(secondCard).innerHTML = cardFace;
+
+                        // Controls whose turn it is
+                        if (playerTurn === 1) {
+                            playerTurn = 2;
+                            document.getElementById("message").innerHTML = p2_name + ", you're up!";
+                            document.body.style.backgroundColor = p2_turn;
+                        }
+                        else {
+                            playerTurn = 1;
+                            document.getElementById("message").innerHTML = p1_name + ", you're up!";
+                            document.body.style.backgroundColor = p1_turn;
+                        }
+                        resetPicks();
+                    }
+                };
+                // Add an event listener to the concede cell to allow the user to concede the game
+                document.getElementById("concede").onclick = function () {
+                    concede();
+                };
+            }
+        }
+
+        //startGame():  ask the players' names, and size of board
+        //               then call a function to set up the board
+        function startGame() {
+            // Start by getting the names of the players from the prompts and setting them in the HTML
+            getGameInfo();
+
+            // Loop through for half as many tiles are in the board to assure they all have a match
+            for (let i = 0; i < (numCards)/2; i++) {
+                // Creates random numbers to match the color and nums arrays
+                let randColor = Math.round(Math.random() * 9);
+                let randNum = Math.round(Math.random() * 3);
+                // Add two of the same cards so you have matching cards in the array
+                cards.push([colors[randColor], nums[randNum]]);
+                cards.push([colors[randColor], nums[randNum]]);
+            }
+
+            // Function to shuffle the cards randomly
+            for (let i = 0; i < cards.length; i++) {
+                let j = Math.floor(Math.random() * i);
+                let temp = cards[i];
+                cards[i] = cards[j];
+                cards[j] = temp;
+            }
+
+            // Now we can build the game board
+            let counter = 0;
+            let gameBoard = document.getElementById("theBoard");
+            for (let rows = 0; rows < size; rows++) {
+                let newRow = gameBoard.insertRow(rows);
+                for (let cols = 0; cols < size; cols++){
+                    let newCard = newRow.insertCell(cols);
+                    newCard.id = counter.toString();
+                    newCard.style.backgroundColor = defaultColor;
+                    newCard.innerHTML = cardFace;
+                    newCard.style.width = "240px";
+                    newCard.addEventListener("click", flip, false);
+                    counter++;
+                }
+            }
+        } // startGame();
+
+    </script>
+
+</head>
+
+<body style="background-color: rgba(0,0,255,.5)">
+
+<div class="content">
+
+<table id="scoreBoard" style="background-color: white">
+    <tr>
+        <th colspan="2" align="center" style="color:blue">PLAYER 1</th>
+        <th colspan="2" align="center" style="color:red">PLAYER 2</th>
+    </tr>
+    <tr>
+        <td width="405" id="p1_name" style="color:blue; font-size: 20px">Jack</td>
+        <td width="75" id="p1_score" style="color:blue">Score: 0</td>
+        <td width="405" id="p2_name" style="color:red">Diane</td>
+        <td width="75" id="p2_score" style="color:red">Score: 0</td>
+    </tr>
+
+</table>
+<br>
+<table id="theBoard"></table>
+<br>
+<table id="controlBoard" style="background-color: white">
+    <tr>
+        <td id="message" width ="750" style="font-size: 24px"></td>
+        <td id="concede" align="center" style="font-size: 20px">Concede Game</td>
+    </tr>
+</table>
+
+<script>
+    startGame();
+</script>
+</div>
+</body>
+</html>
